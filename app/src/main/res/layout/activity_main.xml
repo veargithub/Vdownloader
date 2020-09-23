@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+
+    <Button
+        android:id="@+id/btnDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="download"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/btnPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="pause"
+        app:layout_constraintTop_toBottomOf="@id/btnDownload"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/btnDeleteFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="delete file"
+        app:layout_constraintTop_toBottomOf="@id/btnPause"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/btnFileExists"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="file exists"
+        app:layout_constraintTop_toBottomOf="@id/btnDeleteFile"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/btnMD5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="md5"
+        app:layout_constraintTop_toBottomOf="@id/btnFileExists"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"/>
+
+<!--    <Button-->
+<!--        android:id="@+id/btnMD5"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="md5"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/btnFileExists"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        android:layout_marginTop="20dp"/>-->
+
+    <Button
+        android:id="@+id/btnProgressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="btnProgressbar"
+        app:layout_constraintTop_toBottomOf="@id/btnMD5"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="400dp"/>
+
+    <Button
+        android:id="@+id/btnDownloaderNotify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="downloaderNotify"
+        app:layout_constraintTop_toBottomOf="@id/btnProgressbar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="200dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

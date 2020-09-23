@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+<!--    <domain-config cleartextTrafficPermitted="true">-->
+<!--        <domain includeSubdomains="true">47.103.65.210</domain>-->
+<!--        <domain includeSubdomains="true">yapi.youma.me</domain>-->
+<!--        <domain includeSubdomains="true">mapi-dev.bqbase.com</domain>-->
+<!--        <domain includeSubdomains="true">cdn.bqbase.com</domain>-->
+<!--    </domain-config>-->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>
