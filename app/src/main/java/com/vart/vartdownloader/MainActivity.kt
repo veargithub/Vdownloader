@@ -17,13 +17,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import com.vart.vartdownloader.customer.VartProgressDialog
-import com.vart.vartdownloader.download.DownloaderEntity
-import com.vart.vartdownloader.download.DownloaderManager
-import com.vart.vartdownloader.download.DownloaderWrapper
-import com.vart.vartdownloader.download.IDownloader
-import com.vart.vartdownloader.util.MD5
-import com.vart.vartdownloader.util.StorageUtils
+import com.vart.library.vdownloader.customer.VartProgressDialog
+import com.vart.library.vdownloader.download.DownloaderEntity
+import com.vart.library.vdownloader.download.DownloaderManager
+import com.vart.library.vdownloader.download.DownloaderWrapper
+import com.vart.library.vdownloader.download.IDownloader
+import com.vart.library.vdownloader.util.MD5
+import com.vart.library.vdownloader.util.StorageUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), IDownloader {
         "",
         "video0"
     )
-    var progressDialog: VartProgressDialog ?= null
+    var progressDialog: VartProgressDialog?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,6 +142,10 @@ class MainActivity : AppCompatActivity(), IDownloader {
             Log.d(TAG, "btnDownloaderNotify")
             downloaderNotify()
         }
+
+        btnJavaActivity.setOnClickListener {
+            startActivity(Intent(this, MainJavaActivity::class.java))
+        }
     }
 
 
@@ -160,9 +164,12 @@ class MainActivity : AppCompatActivity(), IDownloader {
 
     override fun onComplete(wrapper: DownloaderWrapper) {
         Log.d(TAG, "on complete")
-        progressDialog?.tvConfirm?.isEnabled = true
+        progressDialog?.enableConfirm(true)
+        progressDialog?.enableCancel(false)
+        progressDialog?.setAnotherTips("下载完成")
         NotificationManagerCompat.from(this).apply {
             notificationBuilder?.setProgress(0, 0, false)?.setContentText("下载完成")
+            Log.d(TAG, "download complete")
             notify(10001, notificationBuilder?.build()!!)
         }
     }

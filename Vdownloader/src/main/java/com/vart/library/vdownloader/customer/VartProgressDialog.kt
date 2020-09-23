@@ -2,6 +2,7 @@ package com.vart.library.vdownloader.customer
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
 import android.text.TextUtils
 import android.view.View
 import android.widget.ProgressBar
@@ -18,8 +19,8 @@ class VartProgressDialog(
     var tips: String? = null,
     var onInteractionListener: OnInteractionListener? = null,
     var canCancel: Boolean? = true,
-    var btnConfirmEnabled: Boolean? = null,
-    var btnCancelEnabled: Boolean? = null,
+    var btnConfirmEnabled: Boolean = true,
+    var btnCancelEnabled: Boolean = true,
     var btnConfirmText: String = "",
     var btnCancelText: String = ""
 
@@ -56,7 +57,7 @@ class VartProgressDialog(
         }
 
         tvConfirm = findViewById(R.id.tvConfirm)
-        tvConfirm?.isEnabled = btnConfirmEnabled ?: true
+        enableConfirm(btnConfirmEnabled)
         tvConfirm?.text = if (btnConfirmText.isBlank()) "确定" else btnConfirmText
         tvConfirm!!.setOnClickListener(this)
 
@@ -77,6 +78,23 @@ class VartProgressDialog(
         progressBar?.progress = progress
     }
 
+    fun setAnotherTips(tips: String?) {
+        this.tips = tips
+        tvTips?.text = tips
+    }
+
+    fun enableConfirm(enabled: Boolean) {
+        btnConfirmEnabled = enabled
+        tvConfirm?.isEnabled = enabled
+        tvConfirm?.setTextColor(Color.parseColor(if (btnConfirmEnabled) "#5C8EE0" else "#eeeeee"))
+    }
+
+    fun enableCancel(enabled: Boolean) {
+        btnCancelEnabled = enabled
+        tvCancel?.isEnabled = enabled
+        tvCancel?.setTextColor(Color.parseColor(if (btnCancelEnabled) "#5C8EE0" else "#eeeeee"))
+    }
+
     override fun onClick(v: View) {
         val vId = v.id
         if (vId == R.id.tvConfirm) {
@@ -95,8 +113,8 @@ class VartProgressDialog(
         var tips: String? = null,
         var onInteractionListener: OnInteractionListener? = null,
         var canCancel: Boolean? = null,
-        var btnConfirmEnabled: Boolean? = null,
-        var btnCancelEnabled: Boolean? = null,
+        var btnConfirmEnabled: Boolean = true,
+        var btnCancelEnabled: Boolean = true,
         var btnConfirmText: String = "",
         var btnCancelText: String = ""
     ) {
