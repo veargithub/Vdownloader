@@ -26,37 +26,25 @@ object DownloaderManager {
     private val tasks = ConcurrentHashMap<String, DownloaderTask>()
 
     fun addTask(context: Context, fileInfo: DownloaderEntity.FileInfo, downloadImpl: IDownloader, fileSize: Long = 0) {
-//        deleteDownloaderInfoTest(context, fileInfo) //todo test
-
         val previousTask = tasks[fileInfo.url]
         if (previousTask != null) {//如果task列表存在，说明正在下载中
             previousTask.downloaderImpl = downloadImpl
             //为了解决并发问题，要到后面才能return
-
         }
-
-        val sp = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
-        val wrapper = sp.getString(fileInfo.url, null)
-        var downloadWrapper: DownloaderWrapper? = null
-        if (wrapper != null) {
-            downloadWrapper = mapper.readValue(wrapper, DownloaderWrapper::class.java)
-            if (downloadWrapper.isCompleted) {//如果这个文件已经下载完成了
-                downloadImpl.onComplete(downloadWrapper)
-                Log.d(TAG, "task already complete")
-                return
-            }
+        var downloadWrapper = loadDownloadWrapper(context, fileInfo.url)
+        if (downloadWrapper?.isCompleted == true) {
+            downloadImpl.onComplete(downloadWrapper)
+            Log.d(TAG, "task already complete")
+            return
         }
-
         if (previousTask != null) {
             Log.d(TAG, "task exists")
             return
         }
 
-
         val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         scope.launch {
             if (downloadWrapper == null) {//既没有下载已完成，也不是正在下载中
-
                 downloadWrapper = DownloaderWrapper()
                 if (fileInfo.fileName.isBlank()) fileInfo.fileName = fileInfo.url.substring(fileInfo.url.lastIndexOf("/") + 1) //如果没有设置文件名，则自动设置一个
                 if (fileInfo.dictionary.isBlank()) fileInfo.dictionary = "tmp" //如果没有文件夹名，则自动设置一个
@@ -84,12 +72,10 @@ object DownloaderManager {
             val task = DownloaderTask(context, downloadWrapper!!, config, downloadImpl)
             tasks[fileInfo.url] = task
             downloadImpl.onStart(downloadWrapper!!)
-            withContext(Dispatchers.IO) {
+            //withContext(Dispatchers.IO) {
                 task.start()
-            }
-
+            //}
         }
-
     }
 
     private suspend fun getFileSize(url: String) : Long = withContext(Dispatchers.IO) {
@@ -139,7 +125,17 @@ object DownloaderManager {
 
     }
 
-//    fun isDownloadComplete(downloaderWrapper: DownloaderWrapper): Boolean {
-//        return downloaderWrapper.threadInfoList.map {it.offset} .sum() >= downloaderWrapper.fileSize ?: 0
-//    }
+    fun loadDownloadWrapper(context: Context, url: String): DownloaderWrapper? {
+        val sp = context.getSharedPreferences(PREFERENCE_FILE_KEY, Context.MODE_PRIVATE)
+        val wrapper = sp.getString(url, null)
+        var downloadWrapper: DownloaderWrapper? = null
+        if (wrapper != null) {
+            return mapper.readValue(wrapper, DownloaderWrapper::class.java)
+
+//            if (downloadWrapper.isCompleted) {//如果这个文件已经下载完成了
+//
+//            }
+        }
+        return null
+    }
 }

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="#22000000">
+
+    <LinearLayout android:id="@+id/llMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingLeft="28dp"
+        android:paddingRight="28dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@mipmap/nebula_upgrade_dialog_header"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="发现新版本"
+                android:textSize="24sp"
+                android:textColor="#26c6d9"
+                android:includeFontPadding="false"
+
+                />
+
+            <TextView android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                tools:text="v2.1.0"
+                android:textSize="14sp"
+                android:textColor="#26c6d9"
+                android:background="@drawable/shape_version"
+
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:layout_marginLeft="8dp"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/shape_dialog_upgrade_bg">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:scrollbars="none">
+                <LinearLayout android:id="@+id/llLogs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <include layout="@layout/tv_dialog_upgrade_item" />
+                    <include layout="@layout/tv_dialog_upgrade_item" />
+                    <include layout="@layout/tv_dialog_upgrade_item" />
+                    <include layout="@layout/tv_dialog_upgrade_item" />
+                </LinearLayout>
+
+            </ScrollView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FF8000"
+                android:textSize="10sp"
+                android:text="提示：新版本包含重大安全更新，请更新到最新版本后继续使用"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:layout_marginTop="18dp"/>
+
+            <ProgressBar android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:max="100"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:layout_marginTop="16dp"/>
+
+            <Button android:id="@+id/btnInstall"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                tools:text="无需流量，立即安装"
+                android:textColor="#ffffff"
+                android:textSize="18dp"
+                android:background="@drawable/shape_btn_18_cornor_26c6d9_solid"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:layout_marginTop="16dp"
+                android:includeFontPadding="false"
+                android:layout_marginBottom="22dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView android:id="@+id/ivExit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/dialog_exit"
+        app:layout_constraintTop_toBottomOf="@id/llMain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="28dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

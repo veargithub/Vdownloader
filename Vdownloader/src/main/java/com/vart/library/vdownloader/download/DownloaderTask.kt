@@ -1,11 +1,14 @@
 package com.vart.library.vdownloader.download
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.vart.library.vdownloader.download.DownloaderConfig
 import com.vart.library.vdownloader.download.DownloaderEntity
 import com.vart.library.vdownloader.util.StorageUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.RandomAccessFile
 import java.util.concurrent.CountDownLatch
@@ -26,8 +29,10 @@ class DownloaderTask (val context: Context, val downloaderWrapper: DownloaderWra
             }
             val current = atomCurrent.addAndGet(plus.toLong())
             val progress = current * 1.0f / (downloaderWrapper.fileSize ?: 1L)
-            downloaderImpl?.onProgress(progress)
-            Log.d(TAG, "plus: $plus current: $current total: ${downloaderWrapper.fileSize} progress $progress")
+            GlobalScope.launch(Dispatchers.Main) {
+                downloaderImpl?.onProgress(progress)
+                Log.d(TAG, "plus: $plus current: $current total: ${downloaderWrapper.fileSize} progress $progress in thread" + Thread.currentThread().name)
+            }
             if (progress >= 1.0f) downloaderWrapper.isCompleted = true
             DownloaderManager.saveWrapper(context, downloaderWrapper)
             //这里因为没有做同步，所以不好删除掉该task
@@ -35,56 +40,64 @@ class DownloaderTask (val context: Context, val downloaderWrapper: DownloaderWra
     }
 
     fun start() {
-        val file = StorageUtils.createFile(context, downloaderWrapper.fileInfo!!.dictionary,
-            downloaderWrapper.fileInfo!!.fileName, false)
-        val randomFile = RandomAccessFile(file.path, "rwd")
-        randomFile.setLength(downloaderWrapper.fileSize!!)
-        randomFile.close()
+        GlobalScope.launch(Dispatchers.IO) {
+            val file = StorageUtils.createFile(context, downloaderWrapper.fileInfo!!.dictionary,
+                downloaderWrapper.fileInfo!!.fileName, false)
+            val randomFile = RandomAccessFile(file.path, "rwd")
+            randomFile.setLength(downloaderWrapper.fileSize!!)
+            randomFile.close()
 
-        atomCurrent.set(0L)
-        val latch = CountDownLatch(downloaderWrapper.threadInfoList.size)
-        downloaderWrapper.threadInfoList.forEach {
-            atomCurrent.addAndGet(it.offset)
-        }
-        progressImpl.onProgressUpdate(0)
-        Log.d(TAG, "task ${Thread.currentThread().id} start current: ${atomCurrent.get()} retryTimes: $retryTimes path: ${file.path} ")
-        downloaderWrapper.threadInfoList.forEachIndexed{ index, it ->
-            val downloaderEntity = DownloaderEntity.Builder()
-                .threadInfo(it)
-                .fileInfo(downloaderWrapper.fileInfo!!)
-                .status(DownloaderEntity.Status.pending)
-                .build()
-            val downloaderThread = DownloaderThread.Builder()
-                .id(index)
-                .path(file.path)
-                .isStop(isStop)
-                .downloader(progressImpl)
-                .downloaderConfig(downloaderConfig)
-                .downloaderEntity(downloaderEntity)
-                .latch(latch)
-                .build()
-            val thread = Thread(downloaderThread)
-            threads.add(downloaderThread)
-            thread.start()
-//            Log.d(TAG, ">>>> ${isStop === downloaderThread.isStop}")
-        }
-        latch.await()
-        if (isStop) {
-            //todo downloaderImpl.onStop
-            Log.d(TAG, "task stopped")
-            return
-        }
-        if (downloaderWrapper.isCompleted) {
-            downloaderImpl?.onComplete(downloaderWrapper)
-            return
-        }
-        if (retryTimes >= downloaderConfig.retryTimes) {
-            Log.d(TAG, "failed: $retryTimes ${downloaderConfig.retryTimes}")
-            downloaderImpl?.onFail(downloaderWrapper)
-        } else {
-            Log.d(TAG, "retry: $retryTimes ${downloaderConfig.retryTimes}")
-            retryTimes++
-            start()
+            atomCurrent.set(0L)
+            val latch = CountDownLatch(downloaderWrapper.threadInfoList.size)
+            downloaderWrapper.threadInfoList.forEach {
+                atomCurrent.addAndGet(it.offset)
+            }
+            launch(Dispatchers.Main) {
+                progressImpl.onProgressUpdate(0)
+            }
+
+            Log.d(TAG, "task ${Thread.currentThread().name} start current: ${atomCurrent.get()} retryTimes: $retryTimes path: ${file.path} ")
+            downloaderWrapper.threadInfoList.forEachIndexed{ index, it ->
+                val downloaderEntity = DownloaderEntity.Builder()
+                    .threadInfo(it)
+                    .fileInfo(downloaderWrapper.fileInfo!!)
+                    .status(DownloaderEntity.Status.pending)
+                    .build()
+                val downloaderThread = DownloaderThread.Builder()
+                    .id(index)
+                    .path(file.path)
+                    .isStop(isStop)
+                    .downloader(progressImpl)
+                    .downloaderConfig(downloaderConfig)
+                    .downloaderEntity(downloaderEntity)
+                    .latch(latch)
+                    .build()
+                val thread = Thread(downloaderThread)
+                threads.add(downloaderThread)
+                thread.start()
+            }
+            latch.await()
+            if (isStop) {
+                //todo downloaderImpl.onStop
+                Log.d(TAG, "task stopped")
+                return@launch
+            }
+            if (downloaderWrapper.isCompleted) {
+                launch(Dispatchers.Main) {
+                    downloaderImpl?.onComplete(downloaderWrapper)
+                }
+                return@launch
+            }
+            if (retryTimes >= downloaderConfig.retryTimes) {
+                launch(Dispatchers.Main) {
+                    Log.d(TAG, "failed: $retryTimes ${downloaderConfig.retryTimes}")
+                    downloaderImpl?.onFail(downloaderWrapper)
+                }
+            } else {
+                Log.d(TAG, "retry: $retryTimes ${downloaderConfig.retryTimes}")
+                retryTimes++
+                start()
+            }
         }
     }
 

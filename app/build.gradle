@@ -10,14 +10,30 @@ android {
         applicationId "com.vart.vartdownloader"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file("vart.keystore")
+            storePassword "123456"
+            keyAlias "vart.keystore"
+            keyPassword "123456"
+        }
+        debug {
+            storeFile file("vart.keystore")
+            storePassword "123456"
+            keyAlias "vart.keystore"
+            keyPassword "123456"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

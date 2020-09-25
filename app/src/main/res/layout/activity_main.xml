@@ -66,6 +66,26 @@
         android:layout_marginTop="20dp"/>
 
     <Button
+        android:id="@+id/btnIsWifi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="isWifi"
+        app:layout_constraintTop_toBottomOf="@id/btnJavaActivity"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        />
+
+    <Button
+        android:id="@+id/btnAlert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="alert"
+        app:layout_constraintTop_toBottomOf="@id/btnIsWifi"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:background="@mipmap/ic_launcher"/>
+
+    <Button
         android:id="@+id/btnProgressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
